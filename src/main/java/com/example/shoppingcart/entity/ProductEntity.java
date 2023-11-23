@@ -16,4 +16,14 @@ public class ProductEntity {
     private String productName;
     private String productDescription;
     private double unitPrice;
+
+    @Override
+    public String toString() {
+        return "ProductEntity{" +
+                "id=" + id +
+                ", productName='" + productName + '\'' +
+                ", productDescription='" + productDescription + '\'' +
+                ", unitPrice=" + unitPrice +
+                '}';
+    }
 }

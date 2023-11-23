@@ -1,8 +1,11 @@
 package com.example.shoppingcart.controller;
 
+import com.example.shoppingcart.domain.Cart;
 import com.example.shoppingcart.domain.Product;
 import com.example.shoppingcart.entity.CartEntity;
+import com.example.shoppingcart.service.CartService;
 import com.example.shoppingcart.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +13,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
-@RequestMapping("products")
-public class ProductController {
+@RequestMapping("cart")
+public class CartController {
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private ProductService productService;
@@ -24,21 +34,16 @@ public class ProductController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("products", productService.getAllProduct());
+        List<Cart> carts = cartService.getAll();
+        model.addAttribute("carts", carts);
         model.addAttribute("numberOfItems", cartEntity.count());
-        return "product/list";
+        return "cart/list";
     }
 
-    @GetMapping("create")
-    public String showCreate(Model model) {
-        model.addAttribute("product", new Product());
-        return "product/create";
-    }
+    @PostMapping
+    public String addItem(@ModelAttribute Product product, Model model) {
+        cartService.addItem(product);
 
-    @PostMapping("create")
-    public String create(@ModelAttribute Product product, RedirectAttributes redirect) {
-        productService.create(product);
-        redirect.addFlashAttribute("success", "Save product successfully!");
-        return "redirect:/products";
+        return "redirect:/cart";
     }
 }

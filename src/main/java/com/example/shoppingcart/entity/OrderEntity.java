@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,5 +22,5 @@ public class OrderEntity {
     private String customerAddress;
 
     @OneToMany(mappedBy = "orderEntity", fetch = FetchType.EAGER)
-    List<OrderDetailsEntity> orderDetailsEntities;
+    private List<OrderDetailsEntity> orderDetailsEntities = new ArrayList<>();
 }

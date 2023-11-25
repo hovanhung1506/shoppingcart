@@ -45,4 +45,10 @@ public class CartServiceImpl implements CartService {
         ProductEntity productEntity = productRepository.findById(product.getId()).orElseThrow();
         cartEntity.addItem(productEntity);
     }
+
+    @Override
+    public void removeItem(Product product) {
+        ProductEntity productEntity = productRepository.findById(product.getId()).orElseThrow();
+        cartEntity.removeItem(productEntity);
+    }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 public interface CartService {
 
     List<Cart> getAll();
-
     void addItem(Product product);
+    void removeItem(Product product);
 }

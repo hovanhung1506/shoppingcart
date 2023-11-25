@@ -27,9 +27,6 @@ public class CartController {
     private ModelMapper modelMapper;
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private CartEntity cartEntity;
 
     @GetMapping
@@ -40,10 +37,15 @@ public class CartController {
         return "cart/list";
     }
 
-    @PostMapping
-    public String addItem(@ModelAttribute Product product, Model model) {
+    @PostMapping("/add")
+    public String addItem(@ModelAttribute Product product) {
         cartService.addItem(product);
+        return "redirect:/cart";
+    }
 
+    @PostMapping("/remove")
+    public String removeItem(@ModelAttribute Product product) {
+        cartService.removeItem(product);
         return "redirect:/cart";
     }
 }

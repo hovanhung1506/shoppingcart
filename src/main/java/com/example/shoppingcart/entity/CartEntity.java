@@ -4,10 +4,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Component
@@ -33,16 +30,6 @@ public class CartEntity {
             detail.setProductEntity(productEntity);
             orderEntity.getOrderDetailsEntities().add(detail);
         }
-
-//        print();
-    }
-
-    public void print() {
-        Optional.ofNullable(orderEntity.getOrderDetailsEntities()).orElse(new ArrayList<>()).forEach(item -> {
-            System.out.println("ProductId: " + item.getProductEntity().getId());
-            System.out.println("Quantity: " + item.getQuantity());
-            System.out.println("=======================");
-        });
     }
 
     public List<OrderDetailsEntity> getAll() {
@@ -50,7 +37,28 @@ public class CartEntity {
     }
 
     public int count() {
-        return orderEntity.getOrderDetailsEntities().stream().map(OrderDetailsEntity::getQuantity).reduce(0, Integer::sum);
+        return orderEntity.getOrderDetailsEntities()
+                .stream()
+                .map(OrderDetailsEntity::getQuantity)
+                .reduce(0, Integer::sum);
+    }
+
+    public void emptyCart() {
+        orderEntity.setOrderDetailsEntities(List.of());
+    }
+
+    public void removeItem(ProductEntity productEntity) {
+        Iterator<OrderDetailsEntity> iterator = orderEntity.getOrderDetailsEntities().iterator();
+        while (iterator.hasNext()) {
+            OrderDetailsEntity detail = iterator.next();
+            if (Objects.equals(detail.getProductEntity().getId(), productEntity.getId())) {
+                if (detail.getQuantity() > 1) {
+                    detail.setQuantity(detail.getQuantity() - 1);
+                } else {
+                    iterator.remove();
+                }
+            }
+        }
     }
 
 }

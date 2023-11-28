@@ -16,7 +16,7 @@ public class CartEntity {
         boolean isFound = Optional.of(orderEntity.getOrderDetailsEntities())
                 .orElse(new ArrayList<>())
                 .stream()
-                .anyMatch(product -> Objects.equals(product.getProductEntity().getId(), productEntity.getId()));
+                .anyMatch(detail -> Objects.equals(detail.getProductEntity().getId(), productEntity.getId()));
 
         if (isFound) {
             orderEntity.getOrderDetailsEntities().forEach(detail -> {

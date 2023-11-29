@@ -1,0 +1,10 @@
+###
+POST http://localhost:8080/cart/change-quantity
+Content-Type: application/json
+
+{
+  "action": "increment",
+  "id": 1
+}
+
+###

@@ -17,7 +17,7 @@
             <h3><a th:href="@{/}">Home page</a></h3>
             <h3><a th:href="@{/products}">List product</a></h3>
             <div style="display: flex; align-content: center; justify-content: space-between">
-                <h3 th:text="'Cart( ' + ${numberOfItems} + ' )'"></h3>
+                <h3 class="cart" th:text="'Cart( ' + ${numberOfItems} + ' )'"></h3>
                 <a th:href="@{/checkout}">
                     <button>Checkout</button>
                 </a>
@@ -39,13 +39,13 @@
                 <th scope="row" style="width: 5%" th:text="${i.index + 1}"></th>
                 <td th:text="${cart.product.productName}" style="width: 40%"></td>
                 <td th:text="${#numbers.formatDecimal(cart.product.unitPrice, 0, 'COMMA', 0, 'POINT')}" style="width: 10%"></td>
-                <td th:text="${cart.quantity}" style="width: 15%"></td>
+                <td th:text="${cart.quantity}" class="quantity" style="width: 15%"></td>
                 <td style="display: flex; justify-content: center; gap: 20px">
-                    <form th:action="@{/cart/add}" th:method="post" th:object="${product}">
+                    <form th:action="@{/cart/change-quantity/{id}(id=${cart.product.id})}" class="form-increment">
                         <input type="hidden" th:name="id" th:value="${cart.product.id}">
                         <button type="submit">Add</button>
                     </form>
-                    <form th:action="@{/cart/remove}" th:method="post" th:object="${product}">
+                    <form th:action="@{/cart/change-quantity/{id}(id=${cart.product.id})}" class="form-decrement">
                         <input type="hidden" th:name="id" th:value="${cart.product.id}">
                         <button type="submit">Remove</button>
                     </form>
@@ -54,5 +54,61 @@
             </tbody>
         </table>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+        const formIncrements = document.querySelectorAll('.form-increment');
+        formIncrements.forEach(form => {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type : "POST",
+                    url : "/cart/change-quantity",
+                    ContentType : "application/json",
+                    dataType : 'json',
+                    data : {
+                        id: form.querySelector('input[name="id"]').value,
+                        action: "increment",
+                    },
+                    success : function(data) {
+                        form.closest('tr').querySelector('.quantity').innerText = data.quantity;
+                        const cart = document.querySelector('.cart');
+                        cart.innerText = `Cart( ${data.numberOfItems} )`
+                    },
+                    error : function(e) {
+                        console.log("ERROR: ", e);
+                    }
+                });
+            })
+        })
+
+        const formDecrements = document.querySelectorAll('.form-decrement');
+        formDecrements.forEach(form => {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type : "POST",
+                    url : "/cart/change-quantity",
+                    ContentType : "application/json",
+                    dataType : 'json',
+                    data : {
+                        id: form.querySelector('input[name="id"]').value,
+                        action: "decrement",
+                    },
+                    success : function(data) {
+                        if(data.quantity === 0) {
+                            form.closest('tr').remove()
+                        }else {
+                            form.closest('tr').querySelector('.quantity').innerText = data.quantity;
+                        }
+                        const cart = document.querySelector('.cart');
+                        cart.innerText = `Cart( ${data.numberOfItems} )`
+                    },
+                    error : function(e) {
+                        console.log("ERROR: ", e);
+                    }
+                });
+            })
+        })
+    </script>
 </body>
 </html>
